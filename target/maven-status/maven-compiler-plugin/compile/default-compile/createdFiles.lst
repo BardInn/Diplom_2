@@ -1,0 +1,10 @@
+Customer.class
+CustomerClient.class
+OrderClient.class
+CustomerToken.class
+Ingredients$IngredientsBuilder.class
+Ingredients.class
+Customer$CustomerBuilder.class
+BurgerRestClient.class
+CustomerCredentials$CustomerCredentialsBuilder.class
+CustomerCredentials.class

@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: NotAuthorizedOrderTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.964 s <<< FAILURE! - in NotAuthorizedOrderTest
+setOrderTest(NotAuthorizedOrderTest)  Time elapsed: 1.465 s  <<< FAILURE!
+java.lang.AssertionError: expected:<401> but was:<200>
+	at NotAuthorizedOrderTest.setOrderTest(NotAuthorizedOrderTest.java:38)
+

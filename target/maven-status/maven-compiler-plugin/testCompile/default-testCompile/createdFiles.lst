@@ -1,0 +1,5 @@
+AuthorizedOrderTest.class
+CustomerDataChangeTest.class
+NotAuthorizedOrderTest.class
+CustomerCreateTest.class
+LoginCustomerTest.class
