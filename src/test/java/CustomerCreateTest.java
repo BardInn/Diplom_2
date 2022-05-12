@@ -2,6 +2,7 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,19 +13,28 @@ import static org.junit.Assert.*;
 
 public class CustomerCreateTest {
 	private CustomerClient customerClient;
+	private Customer customer;
 	int statusCode;
+	int statusCodeDouble;
 
 	@Before
 	public void setUp() {
 		customerClient = new CustomerClient();
 	}
 
+	@After
+	public void tearDown() {
+		if (statusCode == 200 && statusCodeDouble == 200) {
+			ValidatableResponse delete = CustomerClient.delete(customer);
+		}
+	}       
+
 
 	@Test
 	@DisplayName("Create new customer")
 	@Description("Create new customer and verify success creations")
 	public void customerCreateRegisterTest() {
-		Customer customer = Customer.getRandom();
+		customer = Customer.getRandom();
 		ValidatableResponse isCreated = customerClient.create(customer);
 		customer.getCustomerToken().setAccessToken(isCreated.extract().path("accessToken"));
 		customer.getCustomerToken().setRefreshToken(isCreated.extract().path("refreshToken"));
@@ -35,8 +45,6 @@ public class CustomerCreateTest {
 		assertThat("Customer can register", statusCode, equalTo(200));
 		assertNotNull(customer.getCustomerToken().getAccessToken());
 		assertNotNull(customer.getCustomerToken().getRefreshToken());
-
-		ValidatableResponse tearDown = customerClient.delete(customer);
 	}
 
 	@Test
@@ -46,18 +54,17 @@ public class CustomerCreateTest {
 		Customer customer = Customer.getRandom();
 		ValidatableResponse isCreated = customerClient.create(customer);
 		ValidatableResponse doubleCreate = customerClient.create(customer);
-		int statusCodeFirst = isCreated.extract().statusCode();
-		int statusCodeDouble = doubleCreate.extract().statusCode();
+		statusCode = isCreated.extract().statusCode();
+		statusCodeDouble = doubleCreate.extract().statusCode();
 		boolean successMessageFirst = isCreated.extract().path("success");
 		boolean successMessageDouble = doubleCreate.extract().path("success");
 
 		assertTrue(successMessageFirst);
 		assertFalse(successMessageDouble);
-		assertThat("First customer created", statusCodeFirst, equalTo(200));
+		assertThat("First customer created", statusCode, equalTo(200));
 		assertThat("Double customer cannot registered", statusCodeDouble, equalTo(403));
 
 		customer.getCustomerToken().setAccessToken(isCreated.extract().path("accessToken"));
-		ValidatableResponse tearDown = customerClient.delete(customer);
 	}
 
 	@Test
@@ -69,8 +76,13 @@ public class CustomerCreateTest {
 				.name(RandomStringUtils.randomAlphabetic(10))
 				.build();
 
-		String faultMessage = customerClient.createCustomerWithMissingField(customer);
+		ValidatableResponse isNotCreated = customerClient.create(customer);
+		statusCode = isNotCreated.extract().statusCode();
+		boolean successMessage = isNotCreated.extract().path("success");
+		String faultMessage = isNotCreated.extract().path("message");
 		assertEquals("Email, password and name are required fields", faultMessage);
+		assertFalse(successMessage);
+		assertThat("Customer can register", statusCode, equalTo(403));
 	}
 
 	@Test
@@ -81,9 +93,13 @@ public class CustomerCreateTest {
 				.email(emails().val())
 				.name(RandomStringUtils.randomAlphabetic(10))
 				.build();
-
-		String faultMessage = customerClient.createCustomerWithMissingField(customer);
+		ValidatableResponse isNotCreated = customerClient.create(customer);
+		statusCode = isNotCreated.extract().statusCode();
+		boolean successMessage = isNotCreated.extract().path("success");
+		String faultMessage = isNotCreated.extract().path("message");
 		assertEquals("Email, password and name are required fields", faultMessage);
+		assertFalse(successMessage);
+		assertThat("Customer can register", statusCode, equalTo(403));
 	}
 
 	@Test
@@ -95,7 +111,12 @@ public class CustomerCreateTest {
 				.password(RandomStringUtils.randomAlphabetic(10))
 				.build();
 
-		String faultMessage = customerClient.createCustomerWithMissingField(customer);
+		ValidatableResponse isNotCreated = customerClient.create(customer);
+		statusCode = isNotCreated.extract().statusCode();
+		boolean successMessage = isNotCreated.extract().path("success");
+		String faultMessage = isNotCreated.extract().path("message");
 		assertEquals("Email, password and name are required fields", faultMessage);
+		assertFalse(successMessage);
+		assertThat("Customer can register", statusCode, equalTo(403));
 	}
 }

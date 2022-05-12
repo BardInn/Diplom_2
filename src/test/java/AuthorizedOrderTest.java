@@ -8,15 +8,13 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
 public class AuthorizedOrderTest {
 	private CustomerClient customerClient;
 	private Customer customer;
 	private OrderClient orderClient;
-	private  List<String> ingredientsList;
+	private List<String> ingredientsList;
 
 
 	@Before
@@ -28,15 +26,14 @@ public class AuthorizedOrderTest {
 		ValidatableResponse loginResponse = customerClient.login(new CustomerCredentials(customer.getEmail(), customer.getPassword()));
 		customer.getCustomerToken().setAccessToken(loginResponse.extract().path("accessToken"));
 		ValidatableResponse getIngredients = orderClient.getIngredient();
-		ingredientsList = getIngredients.extract().jsonPath().getList("data._id") ;
+		ingredientsList = getIngredients.extract().jsonPath().getList("data._id");
 	}
 
 	@After
 	public void tearDown() {
-		ValidatableResponse tearDown =  customerClient.delete(customer);
-		assertThat("Customer deleted", tearDown.extract().statusCode(), equalTo(202));
+		ValidatableResponse tearDown = customerClient.delete(customer);
 	}
-	
+
 	@Test
 	@DisplayName("Set new order")
 	@Description("Try to do new order to authorized customer")
@@ -53,10 +50,7 @@ public class AuthorizedOrderTest {
 	@DisplayName("Set new order")
 	@Description("Try to do new order to authorized customer with non-existing ingredients")
 	public void setOrderWithWrongHushTest() {
-		List<String> wrongIngredientsList = new ArrayList<>();
-		wrongIngredientsList.add("60d3b41abdac");
-		wrongIngredientsList.add("609646e4dc916e0");
-		ValidatableResponse setOrder = orderClient.setOrder(customer, new Ingredients(wrongIngredientsList));
+		ValidatableResponse setOrder = orderClient.setOrder(customer, new Ingredients(ListOfWrongIngredients.LIST_WRONG_INGREDIENTS));
 		int statusCode = setOrder.extract().statusCode();
 		assertEquals(500, statusCode);
 	}
@@ -76,7 +70,7 @@ public class AuthorizedOrderTest {
 	@Test
 	@DisplayName("Get customer order")
 	@Description("Try to get orders from authorized customer")
-	public void getCustomerOrdersTest(){
+	public void getCustomerOrdersTest() {
 		List<String> newOrder = new ArrayList<>(ingredientsList.subList(9, ingredientsList.size() - 1));
 		ValidatableResponse setOrder = orderClient.setOrder(customer, new Ingredients(ingredientsList));
 		ValidatableResponse setOrder1 = orderClient.setOrder(customer, new Ingredients(newOrder));

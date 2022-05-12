@@ -28,7 +28,6 @@ public class CustomerDataChangeTest {
 	@After
 	public void tearDown() {
 		ValidatableResponse tearDown = customerClient.delete(customer);
-		assertThat("Customer deleted", tearDown.extract().statusCode(), equalTo(202));
 	}
 
 	@Test

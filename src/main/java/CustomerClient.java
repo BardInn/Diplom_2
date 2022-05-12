@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class CustomerClient extends BurgerRestClient {
 	private static final String CUSTOMER_PATH = "/api/auth/";
 
+
 	@Step("Create new customer")
 	public ValidatableResponse create(Customer customer) {
 		return given()
@@ -17,22 +18,8 @@ public class CustomerClient extends BurgerRestClient {
 				.then();
 	}
 
-	@Step("Create customer with missing field")
-	public String createCustomerWithMissingField(Customer customer) {
-		return given()
-				.spec(getBaseSpec())
-				.body(customer)
-				.when()
-				.post(CUSTOMER_PATH + "register")
-				.then().log().all()
-				.assertThat()
-				.statusCode(403)
-				.extract()
-				.path("message");
-	}
-
 	@Step("Login customer")
-	public ValidatableResponse login(CustomerCredentials credentials) {
+	public static ValidatableResponse login(CustomerCredentials credentials) {
 		return given()
 				.spec(getBaseSpec())
 				.body(credentials)
@@ -42,7 +29,7 @@ public class CustomerClient extends BurgerRestClient {
 	}
 
 	@Step("Delete customer")
-	public ValidatableResponse delete(Customer customer) {
+	public static ValidatableResponse delete(Customer customer) {
 		return given()
 				.spec(getBaseSpec())
 				.auth().oauth2(customer.getCustomerToken().getToken())
